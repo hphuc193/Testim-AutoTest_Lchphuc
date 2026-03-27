@@ -1,0 +1,30 @@
+name: Testim Automation CI
+
+on:
+  push:
+    branches: [ "main", "master" ] # Chạy test mỗi khi push lên main/master
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  testim-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Testim CLI
+        run: npm install -g @testim/testim-cli
+
+      - name: Run Testim Tests
+        # Sử dụng các Secret đã cài đặt ở Bước A
+        run: |
+          testim --token "${{ secrets.TESTIM_TOKEN }}" \
+                 --project "${{ secrets.TESTIM_PROJECT_ID }}" \
+                 --grid "Testim-HA-Grid" \
+                 --result-label "Build-${{ github.run_number }}"
